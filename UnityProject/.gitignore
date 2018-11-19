@@ -1,0 +1,9 @@
+/Temp
+/ROM
+/Library
+/obj
+/.vs
+/*.csproj
+/*.sln
+/*.userprefs
+/RegisterIcalls.cpp

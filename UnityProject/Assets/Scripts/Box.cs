@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 public class Box : MonoBehaviour
 {
 	[SerializeField]
 	Rigidbody mRigidbody;
 	[SerializeField]
 	GameObject mCameraHandle;
+	[SerializeField]
+	List<string> mScenes;
+	int mCurrentSceneIndex;
 	// ------------------------------------------------------------------------
 	/// @brief 更新
 	// ------------------------------------------------------------------------
@@ -28,7 +32,7 @@ public class Box : MonoBehaviour
 	}
 	void Reset()
 	{
-		SceneManager.LoadScene("Mag");
+		SceneManager.LoadScene(mScenes[mCurrentSceneIndex]);
 	}
 	// ------------------------------------------------------------------------
 	/// @brief 衝突したとき

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 public class Box : MonoBehaviour
@@ -9,6 +10,8 @@ public class Box : MonoBehaviour
 	GameObject mCameraHandle;
 	[SerializeField]
 	List<string> mScenes;
+	[SerializeField]
+	Text mTelop;
 	int mCurrentSceneIndex;
 	// ------------------------------------------------------------------------
 	/// @brief 更新
@@ -30,9 +33,30 @@ public class Box : MonoBehaviour
 			Reset();
 		}
 	}
+	// ------------------------------------------------------------------------
+	/// @brief リセット
+	// ------------------------------------------------------------------------
 	void Reset()
 	{
-		SceneManager.LoadScene(mScenes[mCurrentSceneIndex]);
+		int index = Mathf.Clamp(mCurrentSceneIndex, 0, mScenes.Count - 1);
+		if(index < 0)
+		{
+			return;
+		}
+		SceneManager.LoadScene(mScenes[index]);
+	}
+	// ------------------------------------------------------------------------
+	/// @brief クリア
+	// ------------------------------------------------------------------------
+	void Clear()
+	{
+		++mCurrentSceneIndex;
+		if(mCurrentSceneIndex >= mScenes.Count)
+		{
+			mCurrentSceneIndex = 0;
+		}
+		mTelop.gameObject.SetActive(true);
+		mTelop.text = "CLEAR!!";
 	}
 	// ------------------------------------------------------------------------
 	/// @brief 衝突したとき
@@ -44,6 +68,10 @@ public class Box : MonoBehaviour
 		if(inColl.gameObject.tag == "Mag")
 		{
 			inColl.transform.SetParent(transform);
+			if(transform.childCount >= 10)
+			{
+				Clear();
+			}
 		}
 	}
 }

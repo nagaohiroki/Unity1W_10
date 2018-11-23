@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-public class Box : MonoBehaviour
+public class Player: MonoBehaviour
 {
 	[SerializeField]
 	Rigidbody mRigidbody;

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Collections.Generic;
 public class Box : MonoBehaviour
 {
 	[SerializeField]
@@ -9,54 +8,65 @@ public class Box : MonoBehaviour
 	[SerializeField]
 	GameObject mCameraHandle;
 	[SerializeField]
-	List<string> mScenes;
-	[SerializeField]
 	Text mTelop;
-	int mCurrentSceneIndex;
+	int mSceneIndex;
+	// ------------------------------------------------------------------------
+	/// @brief
+	// ------------------------------------------------------------------------
+	void Start()
+	{
+		mSceneIndex = SceneManager.GetActiveScene().buildIndex;
+	}
 	// ------------------------------------------------------------------------
 	/// @brief 更新
 	// ------------------------------------------------------------------------
 	void Update()
 	{
+		// 移動
 		if(mRigidbody != null)
 		{
 			var v = Vector3.zero;
 			v.z = -Input.GetAxis("Horizontal");
 			mRigidbody.AddTorque(v, ForceMode.VelocityChange);
 		}
+		// カメラ更新
 		if(mCameraHandle != null)
 		{
 			mCameraHandle.transform.position = transform.position;
 		}
+		// リセット
 		if(Input.GetKeyDown(KeyCode.S))
 		{
-			Reset();
+			Restart();
+		}
+		// 死亡
+		if(transform.position.y < -10.0f)
+		{
+			Restart();
 		}
 	}
 	// ------------------------------------------------------------------------
-	/// @brief リセット
+	/// @brief 再スタート
 	// ------------------------------------------------------------------------
-	void Reset()
+	void Restart()
 	{
-		int index = Mathf.Clamp(mCurrentSceneIndex, 0, mScenes.Count - 1);
-		if(index < 0)
-		{
-			return;
-		}
-		SceneManager.LoadScene(mScenes[index]);
+		SceneManager.LoadScene(mSceneIndex);
 	}
 	// ------------------------------------------------------------------------
 	/// @brief クリア
 	// ------------------------------------------------------------------------
 	void Clear()
 	{
-		++mCurrentSceneIndex;
-		if(mCurrentSceneIndex >= mScenes.Count)
+		++mSceneIndex;
+		if(mSceneIndex >= SceneManager.sceneCount)
 		{
-			mCurrentSceneIndex = 0;
+			mSceneIndex = 0;
 		}
-		mTelop.gameObject.SetActive(true);
-		mTelop.text = "CLEAR!!";
+		if(mTelop != null)
+		{
+			mTelop.gameObject.SetActive(true);
+			mTelop.text = "CLEAR!!";
+		}
 	}
 	// ------------------------------------------------------------------------
 	/// @brief 衝突したとき
@@ -68,7 +78,7 @@ public class Box : MonoBehaviour
 		if(inColl.gameObject.tag == "Mag")
 		{
 			inColl.transform.SetParent(transform);
-			if(transform.childCount >= 10)
+			if(transform.childCount >= 9)
 			{
 				Clear();
 			}

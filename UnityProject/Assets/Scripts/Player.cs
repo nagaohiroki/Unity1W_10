@@ -35,6 +35,11 @@ public class Player: MonoBehaviour
 			mCameraHandle.transform.position = transform.position;
 		}
 		// リセット
+		if(Input.GetKeyDown(KeyCode.C))
+		{
+			Clear();
+		}
+		// リセット
 		if(Input.GetKeyDown(KeyCode.S))
 		{
 			Restart();

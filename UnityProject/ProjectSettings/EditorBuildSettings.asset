@@ -14,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Mag2.unity
     guid: b0e1f4d348d154168af5a559998ec273
+  - enabled: 1
+    path: Assets/Scenes/Mag3.unity
+    guid: 20fc6b61352e74740959ca918f731a97
+  - enabled: 1
+    path: Assets/Scenes/Mag4.unity
+    guid: 6ee8a93220e56495d92e39fbb75edd81
   m_configObjects: {}

@@ -58,7 +58,7 @@ public class Player: MonoBehaviour
 	void Clear()
 	{
 		++mSceneIndex;
-		if(mSceneIndex > SceneManager.sceneCount)
+		if(mSceneIndex >= SceneManager.sceneCountInBuildSettings)
 		{
 			mSceneIndex = 0;
 		}

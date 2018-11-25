@@ -9,15 +9,15 @@ public class Player: MonoBehaviour
 	GameObject mCameraHandle;
 	[SerializeField]
 	Text mTelop;
-	int mSceneIndex;
 	// ------------------------------------------------------------------------
 	/// @brief 初回更新
 	// ------------------------------------------------------------------------
 	void Start()
 	{
-		mSceneIndex = SceneManager.GetActiveScene().buildIndex;
 		mTelop.gameObject.SetActive(true);
-		mTelop.text = string.Format("Stage {0}/{1}", mSceneIndex + 1, SceneManager.sceneCountInBuildSettings);
+		mTelop.text = string.Format("Stage {0}/{1}",
+		                            SceneManager.GetActiveScene().buildIndex + 1,
+		                            SceneManager.sceneCountInBuildSettings);
 	}
 	// ------------------------------------------------------------------------
 	/// @brief 更新
@@ -41,13 +41,8 @@ public class Player: MonoBehaviour
 		{
 			mCameraHandle.transform.position = transform.position;
 		}
-		// リセット
-		if(Input.GetKeyDown(KeyCode.S))
-		{
-			Restart();
-		}
-		// 死亡
-		if(transform.position.y < -10.0f)
+		// リセット/死亡
+		if(Input.GetKeyDown(KeyCode.S) || transform.position.y < -10.0f)
 		{
 			Restart();
 		}
@@ -57,25 +52,17 @@ public class Player: MonoBehaviour
 	// ------------------------------------------------------------------------
 	void Restart()
 	{
-		SceneManager.LoadScene(mSceneIndex);
-	}
-	// ------------------------------------------------------------------------
-	/// @brief クリア
-	// ------------------------------------------------------------------------
-	void Clear()
-	{
-		++mSceneIndex;
-		// ステージラスト
-		if(mSceneIndex >= SceneManager.sceneCountInBuildSettings)
+		int currentScene = SceneManager.GetActiveScene().buildIndex;
+		if(IsClear())
 		{
-			mSceneIndex = 0;
+			++currentScene;
+			// ステージラスト
+			if(currentScene >= SceneManager.sceneCountInBuildSettings)
+			{
+				currentScene = 0;
+			}
 		}
-		// クリアテロップ
-		if(mTelop != null)
-		{
-			mTelop.gameObject.SetActive(true);
-			mTelop.text = "CLEAR!!";
-		}
+		SceneManager.LoadScene(currentScene);
 	}
 	// ------------------------------------------------------------------------
 	/// @brief 衝突したとき
@@ -93,7 +80,12 @@ public class Player: MonoBehaviour
 		// クリア
 		if(IsClear())
 		{
-			Clear();
+			// クリアテロップ
+			if(mTelop != null)
+			{
+				mTelop.gameObject.SetActive(true);
+				mTelop.text = "CLEAR!!\n(Press S Ksy)";
+			}
 		}
 	}
 	// ------------------------------------------------------------------------

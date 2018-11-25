@@ -9,25 +9,59 @@ public class Player: MonoBehaviour
 	GameObject mCameraHandle;
 	[SerializeField]
 	Text mTelop;
+	Color mDefaultColor;
+	float mAnim;
 	// ------------------------------------------------------------------------
 	/// @brief 初回更新
 	// ------------------------------------------------------------------------
 	void Start()
 	{
-		mTelop.gameObject.SetActive(true);
-		mTelop.text = string.Format("Stage {0}/{1}",
-		                            SceneManager.GetActiveScene().buildIndex + 1,
-		                            SceneManager.sceneCountInBuildSettings);
+		ShowTelop(string.Format("Stage {0}/{1}", SceneManager.GetActiveScene().buildIndex + 1, SceneManager.sceneCountInBuildSettings));
+		var render = GetComponent<Renderer>();
+		mDefaultColor = render.material.color;
 	}
 	// ------------------------------------------------------------------------
 	/// @brief 更新
 	// ------------------------------------------------------------------------
 	void Update()
 	{
+		if(IsEnding())
+		{
+			UpdateEnding();
+			return;
+		}
+		UpdatePlayer();
+	}
+	// ------------------------------------------------------------------------
+	/// @brief エンディング
+	// ------------------------------------------------------------------------
+	void UpdateEnding()
+	{
+		mAnim += Time.deltaTime * 0.5f;
+		var render = GetComponent<Renderer>();
+		render.material.color = Color.Lerp(mDefaultColor, Color.white, Mathf.Min(mAnim, 1.0f));
+		if(mAnim < 1.0f)
+		{
+			return;
+		}
+		ShowTelop("Thanks for Playing");
+		if(Input.GetKeyDown(KeyCode.S))
+		{
+			Restart();
+		}
+	}
+	// ------------------------------------------------------------------------
+	/// @brief プレイヤー更新
+	// ------------------------------------------------------------------------
+	void UpdatePlayer()
+	{
 		// テロップ消す
 		if(Time.timeSinceLevelLoad > 1.0f && !IsClear())
 		{
-			mTelop.gameObject.SetActive(false);
+			if(mTelop != null)
+			{
+				mTelop.gameObject.SetActive(false);
+			}
 		}
 		// 移動
 		if(mRigidbody != null)
@@ -78,15 +112,34 @@ public class Player: MonoBehaviour
 		// くっつける
 		inColl.transform.SetParent(transform);
 		// クリア
-		if(IsClear())
+		if(!IsClear())
 		{
-			// クリアテロップ
-			if(mTelop != null)
-			{
-				mTelop.gameObject.SetActive(true);
-				mTelop.text = "CLEAR!!\n(Press S Ksy)";
-			}
+			return;
 		}
+		if(mTelop == null)
+		{
+			return;
+		}
+		// クリアテロップ
+		if(!IsEnding())
+		{
+			ShowTelop("CLEAR!!\n(Press S Ksy)");
+			return;
+		}
+	}
+	// ------------------------------------------------------------------------
+	/// @brief テロップを出す
+	///
+	/// @param inText
+	// ------------------------------------------------------------------------
+	void ShowTelop(string inText)
+	{
+		if(mTelop == null)
+		{
+			return;
+		}
+		mTelop.gameObject.SetActive(true);
+		mTelop.text = inText;
 	}
 	// ------------------------------------------------------------------------
 	/// @brief クリアしたかどうか
@@ -96,5 +149,14 @@ public class Player: MonoBehaviour
 	bool IsClear()
 	{
 		return transform.childCount >= 9;
+	}
+	// ------------------------------------------------------------------------
+	/// @brief 最後のステージをクリアしたか
+	///
+	/// @return
+	// ------------------------------------------------------------------------
+	bool IsEnding()
+	{
+		return SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCountInBuildSettings - 1 && IsClear();
 	}
 }
